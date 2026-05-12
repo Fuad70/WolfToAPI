@@ -1,0 +1,39 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: flowkit-flow-coolify
+    restart: unless-stopped
+    shm_size: "1gb"
+    ports:
+      - "8080:8080"
+      - "6080:6080"
+      - "127.0.0.1:5900:5900"
+    environment:
+      API_KEY: ${API_KEY:?set-this}
+      VNC_PASSWORD: ${VNC_PASSWORD:?set-this}
+      TZ: ${TZ:-UTC}
+      FLOW_START_URL: ${FLOW_START_URL:-https://labs.google/fx/tools/flow}
+      SCREEN_WIDTH: ${SCREEN_WIDTH:-1600}
+      SCREEN_HEIGHT: ${SCREEN_HEIGHT:-900}
+      CORS_ORIGINS: ${CORS_ORIGINS:-*}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      BROWSER_PROFILE_DIR: ${BROWSER_PROFILE_DIR:-/data/profile}
+      STATE_DIR: ${STATE_DIR:-/data/state}
+      LOG_DIR: ${LOG_DIR:-/data/logs}
+    volumes:
+      - flowkit_profile:/data/profile
+      - flowkit_state:/data/state
+      - flowkit_logs:/data/logs
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8080/health >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+
+volumes:
+  flowkit_profile:
+  flowkit_state:
+  flowkit_logs:

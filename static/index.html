@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowKit Flow Selfhost</title>
+  <style>
+    body{font-family:Inter,system-ui,sans-serif;background:#0b1020;color:#e7ecff;margin:0;padding:32px;line-height:1.5}
+    .wrap{max-width:980px;margin:0 auto}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+    .card{background:#141b34;border:1px solid #263056;border-radius:18px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    a{color:#8fc1ff} code{background:#0c1430;padding:2px 6px;border-radius:8px;color:#b8d5ff}
+    pre{background:#081126;border:1px solid #223059;border-radius:14px;padding:14px;overflow:auto}
+    .ok{color:#6ee7a8}.bad{color:#ff8d8d}.muted{color:#9db0df}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <h1>FlowKit Flow Selfhost</h1>
+  <p class="muted">Bundled Chromium + extension + noVNC for Google Flow image generation.</p>
+  <div class="grid">
+    <div class="card">
+      <h3>1. Login</h3>
+      <p>Open <a href="/vnc.html?autoconnect=1&resize=remote">noVNC</a>, sign into Google, then leave a Flow tab open.</p>
+    </div>
+    <div class="card">
+      <h3>2. Check status</h3>
+      <p id="status">Loading…</p>
+    </div>
+    <div class="card">
+      <h3>3. Send API request</h3>
+      <p>Use <code>Authorization: Bearer YOUR_API_KEY</code>.</p>
+    </div>
+  </div>
+
+  <h2>Quick cURL</h2>
+  <pre>curl -X POST http://YOUR-HOST/v1/images/generations \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"prompt":"A cinematic product photo of a luxury watch on black stone","size":"1536x1024"}'</pre>
+
+  <h2>Health</h2>
+  <pre id="health">Loading…</pre>
+</div>
+<script>
+async function refresh(){
+  const res = await fetch('/health');
+  const data = await res.json();
+  document.getElementById('health').textContent = JSON.stringify(data,null,2);
+  const ok = data.extension_connected && data.flow_key_present;
+  document.getElementById('status').innerHTML = ok
+    ? '<span class="ok">Ready.</span> Extension is connected and Flow token is present.'
+    : '<span class="bad">Not ready yet.</span> Open noVNC, sign in, and keep a Flow tab open.';
+}
+refresh(); setInterval(refresh, 5000);
+</script>
+</body>
+</html>
