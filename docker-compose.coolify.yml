@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
     shm_size: "1gb"
     ports:
-      - "8080:8080"
+      - "4040:8080"
       - "6080:6080"
       - "127.0.0.1:5900:5900"
     environment:
