@@ -10,8 +10,8 @@ services:
       - "6080:6080"
       - "127.0.0.1:5900:5900"
     environment:
-      - API_KEY=${API_KEY:?set-a-strong-api-key}
-      - VNC_PASSWORD=${VNC_PASSWORD:?set-a-strong-vnc-password}
+      - API_KEY=${API_KEY}
+      - VNC_PASSWORD=${VNC_PASSWORD}
       - TZ=${TZ:-UTC}
       - FLOW_START_URL=${FLOW_START_URL:-https://labs.google/fx/tools/flow}
       - SCREEN_WIDTH=${SCREEN_WIDTH:-1600}
