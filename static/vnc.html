@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowKit VNC Auth</title>
+  <style>
+    body{font-family:Inter,system-ui,sans-serif;background:#0b1020;color:#e7ecff;margin:0;padding:20px;line-height:1.5}
+    .wrap{max-width:1200px;margin:0 auto}
+    .card{background:#141b34;border:1px solid #263056;border-radius:18px;padding:18px;margin-bottom:20px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    .button{display:inline-block;padding:10px 18px;margin:5px;background:#1f67ff;color:#fff;border-radius:12px;text-decoration:none;font-weight:700;cursor:pointer;border:none}
+    .button:hover{background:#1454d8}
+    .button.success{background:#2ed573}
+    .button.success:hover{background:#25b864}
+    .muted{color:#9db0df}
+    #vnc-container{position:relative;width:100%;height:600px;border:1px solid #263056;border-radius:8px;overflow:hidden}
+    #vnc-screen{position:absolute;top:0;left:0;width:100%;height:100%}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>FlowKit VNC Auth Session</h1>
+    <p class="muted">Use this browser session to authenticate with Google Flow. Once logged in, click "Save Auth" to capture your session.</p>
+
+    <div id="vnc-container">
+      <div id="vnc-screen">
+        <p style="text-align:center;padding-top:250px;">Connecting to VNC session...</p>
+      </div>
+    </div>
+
+    <div style="margin-top:20px;">
+      <button class="button success" onclick="saveAuth()">Save Auth</button>
+      <button class="button" onclick="window.close()">Close Session</button>
+    </div>
+
+    <p id="status" class="muted">Status: Connecting...</p>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@novnc/novnc@1.4.0/lib/rfb.js"></script>
+<script>
+let rfb;
+
+function connectVNC() {
+  const container = document.getElementById('vnc-screen');
+  container.innerHTML = '';
+
+  rfb = new RFB(container, 'ws://localhost:6080', {
+    credentials: { password: 'flowkit' }
+  });
+
+  rfb.addEventListener('connect', () => {
+    document.getElementById('status').textContent = 'Status: Connected to VNC session';
+  });
+
+  rfb.addEventListener('disconnect', () => {
+    document.getElementById('status').textContent = 'Status: Disconnected from VNC session';
+  });
+
+  rfb.addEventListener('credentialsrequired', () => {
+    rfb.sendCredentials({ password: 'flowkit' });
+  });
+}
+
+async function saveAuth() {
+  try {
+    const res = await fetch('/api/vnc/auth', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ account_name: 'flow-auth-' + Date.now() })
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      alert('Auth saved successfully! You can now close this window.');
+      document.getElementById('status').textContent = 'Status: Auth saved successfully';
+    } else {
+      const error = await res.json();
+      throw new Error(error.detail || 'Failed to save auth');
+    }
+  } catch (e) {
+    alert('Error saving auth: ' + e.message);
+    document.getElementById('status').textContent = 'Status: Error saving auth';
+  }
+}
+
+// Connect when page loads
+connectVNC();
+</script>
+</body>
+</html>

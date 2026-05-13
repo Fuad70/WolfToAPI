@@ -9,7 +9,7 @@ from pathlib import Path
 
 import aiohttp
 import websockets
-from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi import Depends, FastAPI, HTTPException, Request, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, HTMLResponse
 
@@ -24,6 +24,12 @@ from .flow_bridge import (
 )
 from .models import EditRequest, GenerateRequest, OpenAIImageRequest
 from .security import require_api_key
+from .auth_source import AuthSource
+from .auth_switcher import AuthSwitcher
+from .browser_manager import BrowserManager
+from .create_auth import CreateAuth
+from .proxy_server_system import ProxyServerSystem
+from .request_handler import RequestHandler
 
 logging.basicConfig(level=getattr(logging, LOG_LEVEL, logging.INFO), format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger("flowkit-selfhost")
@@ -53,10 +59,18 @@ async def run_ws_server():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Initialize server system
+    server_system = ProxyServerSystem(logger)
+    await server_system.initialize()
+
+    # Store in app state for access in routes
+    app.state.server_system = server_system
+
     ws_task = asyncio.create_task(run_ws_server())
     logger.info("HTTP on :%s, extension WS on :%s", APP_PORT, AGENT_WS_PORT)
     yield
     ws_task.cancel()
+    await server_system.shutdown()
 
 
 app = FastAPI(title="FlowKit Flow Selfhost", version="0.1.0", lifespan=lifespan)
@@ -157,3 +171,55 @@ async def openai_images(body: OpenAIImageRequest, _: bool = Depends(require_api_
     if not image_url:
         raise HTTPException(status_code=500, detail=f"No image URL found in response: {str(result)[:500]}")
     return {"created": int(__import__("time").time()), "data": [{"url": image_url, "revised_prompt": None}]}
+
+
+# Auth routes (adapted from AIStudioToAPI)
+
+
+@app.get("/login")
+async def login_page():
+    """Serve the login page"""
+    return FileResponse(STATIC_INDEX)
+
+
+@app.get("/api/auth/config")
+async def auth_config():
+    """Get auth configuration for frontend"""
+    # For now, simple config - can be extended
+    return {"requirePassword": True, "requireUsername": False}
+
+
+@app.post("/login")
+async def login(request: Request):
+    """Handle login"""
+    # Simple login implementation - can be extended
+    body = await request.json()
+    password = body.get("password") or body.get("apiKey")
+    expected_password = os.getenv("WEB_CONSOLE_PASSWORD", "admin")
+
+    if password == expected_password:
+        # In a real implementation, you'd set session cookies
+        return {"success": True}
+    else:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+
+
+@app.post("/api/vnc/sessions")
+async def start_vnc_session(request: Request):
+    """Start VNC session for auth creation"""
+    server_system = request.app.state.server_system
+    if server_system.create_auth._reject_if_system_busy(None):
+        raise HTTPException(status_code=409, detail="System is busy")
+    await server_system.create_auth.start_vnc_session(request, type('Response', (), {'status_code': 200, 'detail': None})())
+    return {"status": "VNC session started"}
+
+
+@app.post("/api/vnc/auth")
+async def save_vnc_auth(request: Request):
+    """Save auth from VNC session"""
+    server_system = request.app.state.server_system
+    response = type('Response', (), {'status_code': 200, 'detail': None})()
+    await server_system.create_auth.save_auth_file(request, response)
+    if response.status_code != 200:
+        raise HTTPException(status_code=response.status_code, detail=response.detail)
+    return response.detail

@@ -11,9 +11,9 @@ FLOW_START_URL = os.getenv("FLOW_START_URL", "https://labs.google/fx/tools/flow"
 API_KEY = os.getenv("API_KEY", "change-me")
 CORS_ORIGINS = [x.strip() for x in os.getenv("CORS_ORIGINS", "*").split(",") if x.strip()]
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
-BROWSER_PROFILE_DIR = Path(os.getenv("BROWSER_PROFILE_DIR", "/data/profile"))
-STATE_DIR = Path(os.getenv("STATE_DIR", "/data/state"))
-LOG_DIR = Path(os.getenv("LOG_DIR", "/data/logs"))
+BROWSER_PROFILE_DIR = Path(os.getenv("BROWSER_PROFILE_DIR", "./data/profile"))
+STATE_DIR = Path(os.getenv("STATE_DIR", "./data/state"))
+LOG_DIR = Path(os.getenv("LOG_DIR", "./data/logs"))
 
 IMAGE_MODELS = {
     "NANO_BANANA_PRO": "GEM_PIX_2",

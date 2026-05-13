@@ -3,3 +3,5 @@ uvicorn[standard]==0.35.0
 websockets==15.0.1
 aiohttp==3.12.15
 python-multipart==0.0.20
+playwright==1.49.1
+psutil==6.1.1

@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowKit Auth Management</title>
+  <style>
+    body{font-family:Inter,system-ui,sans-serif;background:#0b1020;color:#e7ecff;margin:0;padding:32px;line-height:1.5}
+    .wrap{max-width:980px;margin:0 auto}
+    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+    .card{background:#141b34;border:1px solid #263056;border-radius:18px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+    a{color:#8fc1ff} code{background:#0c1430;padding:2px 6px;border-radius:8px;color:#b8d5ff}
+    .button{display:inline-block;padding:10px 18px;margin:5px;background:#1f67ff;color:#fff;border-radius:12px;text-decoration:none;font-weight:700;cursor:pointer;border:none}
+    .button:hover{background:#1454d8}
+    .button.danger{background:#ff4757}
+    .button.danger:hover{background:#ff3742}
+    .status{display:inline-block;padding:4px 8px;border-radius:8px;font-size:12px;font-weight:600}
+    .status.ok{background:#2ed573;color:#fff}
+    .status.bad{background:#ff4757;color:#fff}
+    .status.warn{background:#ffa502;color:#000}
+    pre{background:#081126;border:1px solid #223059;border-radius:14px;padding:14px;overflow:auto;max-height:300px}
+    .ok{color:#6ee7a8}.bad{color:#ff8d8d}.muted{color:#9db0df}
+    .auth-item{margin-bottom:15px;padding:10px;border:1px solid #263056;border-radius:8px}
+    .auth-item.expired{opacity:0.6;border-color:#ff4757}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <h1>FlowKit Auth Management</h1>
+  <p class="muted">Manage your Google Flow authentication accounts.</p>
+
+  <div class="grid">
+    <div class="card">
+      <h3>Current Status</h3>
+      <p id="current-status">Loading...</p>
+      <button class="button" onclick="refreshStatus()">Refresh</button>
+    </div>
+
+    <div class="card">
+      <h3>Create New Auth</h3>
+      <p>Launch VNC browser session to create new authentication.</p>
+      <button class="button" onclick="startVncSession()">Start VNC Session</button>
+      <p id="vnc-status" class="muted"></p>
+    </div>
+
+    <div class="card">
+      <h3>Available Auths</h3>
+      <div id="auth-list">Loading...</div>
+    </div>
+  </div>
+
+  <h2>System Status</h2>
+  <pre id="system-status">Loading...</pre>
+</div>
+
+<script>
+let vncSessionActive = false;
+
+async function refreshStatus() {
+  try {
+    const res = await fetch('/api/status');
+    const data = await res.json();
+    document.getElementById('current-status').innerHTML = `
+      <span class="status ${data.extension_connected ? 'ok' : 'bad'}">
+        Extension: ${data.extension_connected ? 'Connected' : 'Disconnected'}
+      </span><br>
+      <span class="status ${data.flow_key_present ? 'ok' : 'bad'}">
+        Flow Key: ${data.flow_key_present ? 'Present' : 'Missing'}
+      </span>
+    `;
+
+    // Load auth list
+    loadAuthList();
+  } catch (e) {
+    document.getElementById('current-status').textContent = 'Error loading status';
+  }
+}
+
+async function loadAuthList() {
+  try {
+    // This would need an API endpoint to list auths
+    // For now, show placeholder
+    document.getElementById('auth-list').innerHTML = `
+      <p class="muted">Auth management API not yet implemented.</p>
+      <p>Available auth files are stored in <code>configs/auth/</code></p>
+    `;
+  } catch (e) {
+    document.getElementById('auth-list').textContent = 'Error loading auth list';
+  }
+}
+
+async function startVncSession() {
+  if (vncSessionActive) {
+    alert('VNC session already active');
+    return;
+  }
+
+  const button = event.target;
+  button.disabled = true;
+  button.textContent = 'Starting...';
+
+  try {
+    const res = await fetch('/api/vnc/sessions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ width: 1280, height: 720 })
+    });
+
+    if (res.ok) {
+      vncSessionActive = true;
+      document.getElementById('vnc-status').innerHTML =
+        '<span class="ok">VNC session started! Open <a href="/vnc.html" target="_blank">noVNC</a> to continue.</span>';
+      button.textContent = 'VNC Active';
+    } else {
+      const error = await res.json();
+      throw new Error(error.detail || 'Failed to start VNC');
+    }
+  } catch (e) {
+    alert('Error starting VNC: ' + e.message);
+    button.disabled = false;
+    button.textContent = 'Start VNC Session';
+  }
+}
+
+async function loadSystemStatus() {
+  try {
+    const res = await fetch('/health');
+    const data = await res.json();
+    document.getElementById('system-status').textContent = JSON.stringify(data, null, 2);
+  } catch (e) {
+    document.getElementById('system-status').textContent = 'Error loading system status';
+  }
+}
+
+refreshStatus();
+loadSystemStatus();
+setInterval(refreshStatus, 10000);
+</script>
+</body>
+</html>

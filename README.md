@@ -58,11 +58,11 @@ docker-compose up -d
 ```
 
 5. Wait ~2 minutes for the browser to start, then:
-   - Open **noVNC**: http://localhost:6080
-   - Enter VNC password from `.env`
-   - Sign into your Google account
-   - Keep a Flow tab open in the browser
-   - Check status: http://localhost:8080
+   - Open the homepage: http://localhost:8080
+   - Click the built-in **Open noVNC** button
+   - Sign into your Google account in the browser session
+   - Keep a Flow tab open
+   - Check status: http://localhost:8080/health
 
 ### Option 2: Docker Run
 

@@ -10,6 +10,8 @@
     .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
     .card{background:#141b34;border:1px solid #263056;border-radius:18px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
     a{color:#8fc1ff} code{background:#0c1430;padding:2px 6px;border-radius:8px;color:#b8d5ff}
+    .button{display:inline-block;padding:10px 18px;margin-top:12px;background:#1f67ff;color:#fff;border-radius:12px;text-decoration:none;font-weight:700}
+    .button:hover{background:#1454d8}
     pre{background:#081126;border:1px solid #223059;border-radius:14px;padding:14px;overflow:auto}
     .ok{color:#6ee7a8}.bad{color:#ff8d8d}.muted{color:#9db0df}
   </style>
@@ -20,8 +22,10 @@
   <p class="muted">Bundled Chromium + extension + noVNC for Google Flow image generation.</p>
   <div class="grid">
     <div class="card">
-      <h3>1. Login</h3>
-      <p>Open <a href="/vnc.html?autoconnect=1&resize=remote">noVNC</a>, sign into Google, then leave a Flow tab open.</p>
+      <h3>1. Open the browser</h3>
+      <p>Click the button below to open the bundled noVNC browser session.</p>
+      <p><a class="button" href="/vnc.html?autoconnect=1&resize=remote">Open noVNC</a></p>
+      <p class="muted">Sign in to Google once and keep the Flow tab open.</p>
     </div>
     <div class="card">
       <h3>2. Check status</h3>
@@ -50,7 +54,7 @@ async function refresh(){
   const ok = data.extension_connected && data.flow_key_present;
   document.getElementById('status').innerHTML = ok
     ? '<span class="ok">Ready.</span> Extension is connected and Flow token is present.'
-    : '<span class="bad">Not ready yet.</span> Open noVNC, sign in, and keep a Flow tab open.';
+    : '<span class="bad">Not ready yet.</span> Open noVNC, sign in, and keep a Flow tab open. <a href="/vnc.html?autoconnect=1&resize=remote">Open noVNC</a>';
 }
 refresh(); setInterval(refresh, 5000);
 </script>
