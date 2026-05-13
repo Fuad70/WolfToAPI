@@ -47,7 +47,7 @@ function connectVNC() {
   container.innerHTML = '';
 
   rfb = new RFB(container, 'ws://localhost:6080', {
-    credentials: { password: 'flowkit' }
+    // No password required - x11vnc started with -nopw
   });
 
   rfb.addEventListener('connect', () => {
@@ -58,9 +58,7 @@ function connectVNC() {
     document.getElementById('status').textContent = 'Status: Disconnected from VNC session';
   });
 
-  rfb.addEventListener('credentialsrequired', () => {
-    rfb.sendCredentials({ password: 'flowkit' });
-  });
+  // No credentialsrequired handler needed since -nopw is used
 }
 
 async function saveAuth() {
