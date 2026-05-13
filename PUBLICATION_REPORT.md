@@ -117,7 +117,7 @@ cd flowkit-flow-coolify
 
 # 2. Configure
 cp .env.example .env
-nano .env  # Edit API_KEY and VNC_PASSWORD
+nano .env  # Edit API_KEY
 
 # 3. Deploy
 docker-compose up -d

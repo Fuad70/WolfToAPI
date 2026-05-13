@@ -137,7 +137,7 @@ class CreateAuth:
 
             vnc_port = 5901
             websockify_port = 6080
-            display = ":99"
+            display = ":98"
 
             scoped_cleanup = lambda reason: self._cleanup_vnc_session(reason, session_resources)
 

@@ -141,12 +141,12 @@ The important one is `/data/profile`, because that is what preserves the Google 
 2. Add HTTP healthcheck.
 3. Avoid custom Docker networks.
 4. Expose app port `4040` and optionally noVNC port `6080`.
-5. Keep raw VNC `5900` bound to `127.0.0.1` only.
+5. No direct VNC password is required; keep noVNC port `6080` restricted to private access.
 
 ### Phase 5 — Harden deployment
 
 1. Require `API_KEY`.
-2. Require `VNC_PASSWORD`.
+2. Use no-password noVNC, but keep access constrained to private networks.
 3. Limit noVNC exposure to setup periods when possible.
 4. Put the API behind HTTPS and, ideally, another auth layer.
 5. Treat `/data/profile` as sensitive credential material.
@@ -159,7 +159,6 @@ The important one is `/data/profile`, because that is what preserves the Google 
 4. Set compose file to `docker-compose.coolify.yml`.
 5. Fill these variables in Coolify:
    - `API_KEY`
-   - `VNC_PASSWORD`
    - optional `TZ`
    - optional `FLOW_START_URL`
 6. Attach persistent storage by keeping the declared named volumes.

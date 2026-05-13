@@ -47,7 +47,6 @@ cp .env.example .env
 3. Edit `.env` with your settings:
 ```env
 API_KEY=your-secure-api-key-here
-VNC_PASSWORD=your-vnc-password
 TZ=UTC
 CORS_ORIGINS=*
 ```
@@ -74,7 +73,6 @@ docker run -d \
   -p 4040:4040 \
   -p 6080:6080 \
   -e API_KEY="your-api-key" \
-  -e VNC_PASSWORD="your-password" \
   -v flowkit_profile:/data/profile \
   -v flowkit_state:/data/state \
   -v flowkit_logs:/data/logs \
@@ -86,7 +84,7 @@ docker run -d \
 1. Create a new application in Coolify
 2. Point to this repository
 3. Set deployment method to Docker Compose
-4. Configure environment variables (API_KEY, VNC_PASSWORD)
+4. Configure environment variables (API_KEY)
 5. Deploy
 
 ## 📡 API Endpoints
@@ -265,7 +263,6 @@ Authorization: Bearer YOUR_API_KEY
 | Variable | Default | Required | Description |
 |----------|---------|----------|-------------|
 | `API_KEY` | `change-me` | ✅ Yes | API authentication key for all POST endpoints |
-| `VNC_PASSWORD` | `change-me-too` | ✅ Yes | Password for VNC/noVNC access |
 | `TZ` | `UTC` | ❌ No | Timezone (e.g., `America/New_York`, `Europe/London`) |
 | `FLOW_START_URL` | `https://labs.google/fx/tools/flow` | ❌ No | Flow interface URL |
 | `SCREEN_WIDTH` | `1600` | ❌ No | Virtual desktop width in pixels |
@@ -298,9 +295,7 @@ Bind these to named volumes or host directories for persistence.
 3. **Network Access**:
    - HTTP (4040): Keep on private network or behind HTTPS proxy
    - noVNC (6080): Keep on private network or VPN-protected
-   - VNC (5900): Only expose if necessary, restrict to localhost
-
-4. **CORS**: Restrict `CORS_ORIGINS` to known domains in production:
+- Raw VNC ports are not exposed by default; if you expose any custom VNC access, restrict it to localhost.
    ```
    CORS_ORIGINS=https://app.example.com,https://api.example.com
    ```
@@ -515,7 +510,7 @@ The project uses:
 **Problem**: `docker logs` shows errors.
 
 **Solutions**:
-- Check `.env` file exists and has `API_KEY` and `VNC_PASSWORD`
+- Check `.env` file exists and has `API_KEY`
 - Increase startup timeout (healthcheck start_period to 120s)
 - Check disk space: `df -h`
 - Check memory: `free -h` (need at least 2GB)
@@ -633,7 +628,7 @@ Then open:
 3. Choose **Docker Compose** build pack.
 4. Use base directory `/`.
 5. Set compose file to `docker-compose.coolify.yml`.
-6. Fill `API_KEY` and `VNC_PASSWORD` in the Coolify environment UI.
+6. Fill `API_KEY` in the Coolify environment UI.
 7. Assign one domain to `app:4040` for the API and dashboard.
 8. Assign a second domain to `app:6080` for noVNC if you want browser-based login over the web.
 9. Deploy.
@@ -644,7 +639,7 @@ Then open:
 2. In Coolify choose a Docker image deployment.
 3. Expose ports `4040` and optionally `6080`.
 4. Attach persistent volumes for `/data/profile`, `/data/state`, and `/data/logs`.
-5. Set `API_KEY` and `VNC_PASSWORD`.
+5. Set `API_KEY`.
 
 ## First login flow
 
@@ -673,9 +668,9 @@ The image exposes `GET /health`, and both the Dockerfile and compose files inclu
 
 ## Security notes
 
-- Use a strong `API_KEY` and `VNC_PASSWORD`.
+- Use a strong `API_KEY` and keep noVNC access restricted to private networks.
 - Prefer exposing `6080` only during the login/setup phase.
-- Keep raw VNC port `5900` bound to localhost only.
+- Keep noVNC port `6080` private and only expose it when required.
 - Persistent browser profiles contain live Google session data, so protect the volume and your Coolify project carefully.
 - This build uses browser automation against a third-party web app. Flow UI/API changes can break it.
 - The Google Flow frontend key used here is a browser-facing key taken from the original project pattern and may rotate in the future.

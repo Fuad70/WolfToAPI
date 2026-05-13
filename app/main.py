@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import base64
 import logging
+import os
 import secrets
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -34,7 +35,8 @@ from .request_handler import RequestHandler
 logging.basicConfig(level=getattr(logging, LOG_LEVEL, logging.INFO), format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger("flowkit-selfhost")
 CALLBACK_SECRET = secrets.token_urlsafe(24)
-STATIC_INDEX = Path(__file__).resolve().parent.parent / "static" / "index.html"
+STATIC_ROOT = Path(__file__).resolve().parent.parent / "static"
+STATIC_INDEX = STATIC_ROOT / "index.html"
 
 
 async def ws_handler(websocket):
@@ -96,6 +98,16 @@ async def health():
 @app.get("/api/status")
 async def status():
     return await health()
+
+
+@app.get("/auth")
+async def auth_page():
+    return FileResponse(STATIC_ROOT / "auth.html")
+
+
+@app.get("/vnc.html")
+async def vnc_page():
+    return FileResponse(STATIC_ROOT / "vnc.html")
 
 
 @app.post("/api/ext/callback")

@@ -64,7 +64,7 @@ The FlowKit Flow Selfhost project is well-architected, production-ready, and sui
 |-----------|--------|---------|
 | API Key Validation | ✅ GOOD | Supports both Bearer and X-API-Key headers |
 | CORS Configuration | ✅ GOOD | Default wildcard, but configurable for production |
-| Password Storage | ✅ GOOD | VNC password hashed with x11vnc |
+| Password Storage | ✅ N/A | noVNC access does not use an x11vnc password |
 | Secrets Management | ✅ GOOD | Uses environment variables, includes callback secret generation |
 | Error Messages | ✅ GOOD | Generic messages without leaking internals |
 | Input Validation | ✅ GOOD | Pydantic models validate all inputs |
@@ -230,7 +230,7 @@ async def test_generate_missing_extension():
 Before deploying to production:
 
 - [ ] Change default `API_KEY` from "change-me"
-- [ ] Change default `VNC_PASSWORD` from "change-me-too"
+- [x] Remove `VNC_PASSWORD` requirement and use no-password noVNC with private access control
 - [ ] Set appropriate `CORS_ORIGINS` (not `*`)
 - [ ] Enable `LOG_LEVEL=WARNING` or `ERROR` in prod
 - [ ] Set up log rotation for `/data/logs/`
