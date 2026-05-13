@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
-APP_PORT = int(os.getenv("APP_PORT", "8080"))
+APP_PORT = int(os.getenv("APP_PORT", "4040"))
 AGENT_WS_PORT = int(os.getenv("AGENT_WS_PORT", "8765"))
 GOOGLE_FLOW_API = "https://aisandbox-pa.googleapis.com"
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY", "AIzaSyBtrm0o5ab1c-Ec8ZuLcGt3oJAA5VWt3pY")

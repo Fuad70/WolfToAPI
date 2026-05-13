@@ -7,7 +7,7 @@ services:
     restart: unless-stopped
     shm_size: "1gb"
     ports:
-      - "8080:8080"
+      - "4040:4040"
       - "6080:6080"
       - "127.0.0.1:5900:5900"
     environment:
@@ -27,7 +27,7 @@ services:
       - flowkit_state:/data/state
       - flowkit_logs:/data/logs
     healthcheck:
-      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8080/health >/dev/null || exit 1"]
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:4040/health >/dev/null || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 5

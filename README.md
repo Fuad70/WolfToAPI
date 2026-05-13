@@ -58,11 +58,11 @@ docker-compose up -d
 ```
 
 5. Wait ~2 minutes for the browser to start, then:
-   - Open the homepage: http://localhost:8080
+   - Open the homepage: http://localhost:4040
    - Click the built-in **Open noVNC** button
    - Sign into your Google account in the browser session
    - Keep a Flow tab open
-   - Check status: http://localhost:8080/health
+   - Check status: http://localhost:4040/health
 
 ### Option 2: Docker Run
 
@@ -71,7 +71,7 @@ docker build -t flowkit-flow-coolify .
 
 docker run -d \
   --name flowkit-flow-coolify \
-  -p 8080:8080 \
+  -p 4040:4040 \
   -p 6080:6080 \
   -e API_KEY="your-api-key" \
   -e VNC_PASSWORD="your-password" \
@@ -102,7 +102,7 @@ Returns container health, extension connection status, and Flow token presence.
 
 **Example:**
 ```bash
-curl http://localhost:8080/health
+curl http://localhost:4040/health
 ```
 
 **Response:**
@@ -296,7 +296,7 @@ Bind these to named volumes or host directories for persistence.
 2. **VNC Password**: Use a strong password. Change from default immediately.
 
 3. **Network Access**:
-   - HTTP (8080): Keep on private network or behind HTTPS proxy
+   - HTTP (4040): Keep on private network or behind HTTPS proxy
    - noVNC (6080): Keep on private network or VPN-protected
    - VNC (5900): Only expose if necessary, restrict to localhost
 
@@ -318,7 +318,7 @@ Bind these to named volumes or host directories for persistence.
 import requests
 
 API_KEY = "your-api-key"
-BASE_URL = "http://localhost:8080"
+BASE_URL = "http://localhost:4040"
 
 def generate_image(prompt):
     response = requests.post(
@@ -341,7 +341,7 @@ print(f"Generated: {url}")
 
 ```javascript
 const API_KEY = "your-api-key";
-const BASE_URL = "http://localhost:8080";
+const BASE_URL = "http://localhost:4040";
 
 async function generateImage(prompt) {
   const response = await fetch(`${BASE_URL}/api/generate`, {
@@ -369,7 +369,7 @@ console.log("Generated:", url);
 
 ```bash
 # Generate
-curl -X POST http://localhost:8080/api/generate \
+curl -X POST http://localhost:4040/api/generate \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -378,7 +378,7 @@ curl -X POST http://localhost:8080/api/generate \
   }'
 
 # Edit
-curl -X POST http://localhost:8080/api/edit \
+curl -X POST http://localhost:4040/api/edit \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -388,7 +388,7 @@ curl -X POST http://localhost:8080/api/edit \
   }'
 
 # OpenAI compatible
-curl -X POST http://localhost:8080/v1/images/generations \
+curl -X POST http://localhost:4040/v1/images/generations \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -621,7 +621,7 @@ docker compose up -d --build
 
 Then open:
 
-- App: `http://YOUR_HOST:8080`
+- App: `http://YOUR_HOST:4040`
 - noVNC: `http://YOUR_HOST:6080/vnc.html?autoconnect=1&resize=remote`
 
 ## Coolify deployment
@@ -634,7 +634,7 @@ Then open:
 4. Use base directory `/`.
 5. Set compose file to `docker-compose.coolify.yml`.
 6. Fill `API_KEY` and `VNC_PASSWORD` in the Coolify environment UI.
-7. Assign one domain to `app:8080` for the API and dashboard.
+7. Assign one domain to `app:4040` for the API and dashboard.
 8. Assign a second domain to `app:6080` for noVNC if you want browser-based login over the web.
 9. Deploy.
 
@@ -642,7 +642,7 @@ Then open:
 
 1. Build and publish the image from this repo.
 2. In Coolify choose a Docker image deployment.
-3. Expose ports `8080` and optionally `6080`.
+3. Expose ports `4040` and optionally `6080`.
 4. Attach persistent volumes for `/data/profile`, `/data/state`, and `/data/logs`.
 5. Set `API_KEY` and `VNC_PASSWORD`.
 
@@ -657,7 +657,7 @@ Then open:
 ## Example cURL
 
 ```bash
-curl -X POST http://YOUR_HOST:8080/v1/images/generations \
+curl -X POST http://YOUR_HOST:4040/v1/images/generations \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{

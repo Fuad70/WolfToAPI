@@ -3,6 +3,7 @@ set -euo pipefail
 
 export DISPLAY=${DISPLAY:-:99}
 export HOME=/home/appuser
+APP_PORT=${APP_PORT:-4040}
 SCREEN_WIDTH=${SCREEN_WIDTH:-1600}
 SCREEN_HEIGHT=${SCREEN_HEIGHT:-900}
 STATE_DIR=${STATE_DIR:-/data/state}
@@ -31,7 +32,7 @@ sleep 1
 su -s /bin/bash appuser -c "fluxbox" >>"$LOG_DIR/fluxbox.log" 2>&1 &
 su -s /bin/bash appuser -c "x11vnc -display $DISPLAY -rfbport 5900 -shared -forever -usepw -rfbauth $VNC_PASS_FILE" >>"$LOG_DIR/x11vnc.log" 2>&1 &
 su -s /bin/bash appuser -c "websockify --web=/usr/share/novnc/ 6080 localhost:5900" >>"$LOG_DIR/novnc.log" 2>&1 &
-su -s /bin/bash appuser -c "cd /app && uvicorn app.main:app --host 0.0.0.0 --port 8080" >>"$LOG_DIR/app.log" 2>&1 &
+su -s /bin/bash appuser -c "cd /app && uvicorn app.main:app --host 0.0.0.0 --port ${APP_PORT}" >>"$LOG_DIR/app.log" 2>&1 &
 su -s /bin/bash appuser -c "cd /app && /app/scripts/launch_chromium.sh" >>"$LOG_DIR/browser-launcher.log" 2>&1 &
 
 wait -n

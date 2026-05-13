@@ -140,7 +140,7 @@ The important one is `/data/profile`, because that is what preserves the Google 
 1. Add `docker-compose.coolify.yml`.
 2. Add HTTP healthcheck.
 3. Avoid custom Docker networks.
-4. Expose app port `8080` and optionally noVNC port `6080`.
+4. Expose app port `4040` and optionally noVNC port `6080`.
 5. Keep raw VNC `5900` bound to `127.0.0.1` only.
 
 ### Phase 5 — Harden deployment
@@ -163,7 +163,7 @@ The important one is `/data/profile`, because that is what preserves the Google 
    - optional `TZ`
    - optional `FLOW_START_URL`
 6. Attach persistent storage by keeping the declared named volumes.
-7. Assign domain for `app:8080`.
+7. Assign domain for `app:4040`.
 8. Optionally assign a second domain for `app:6080`.
 9. Deploy.
 10. Open noVNC, log into Flow once, then use the API.

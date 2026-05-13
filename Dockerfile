@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     DISPLAY=:99 \
-    APP_PORT=8080 \
+    APP_PORT=4040 \
     AGENT_WS_PORT=8765 \
     VNC_PORT=5900 \
     NOVNC_PORT=6080 \
@@ -39,10 +39,10 @@ COPY README.md PROJECT_ANALYSIS.md ./
 
 RUN chmod +x /app/scripts/*.sh && mkdir -p /data/profile /data/state /data/logs && chown -R appuser:appuser /app /data
 
-EXPOSE 8080 6080 5900
+EXPOSE 4040 6080 5900
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=90s --retries=5 \
-  CMD curl -fsS http://127.0.0.1:8080/health >/dev/null || exit 1
+  CMD curl -fsS http://127.0.0.1:4040/health >/dev/null || exit 1
 
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["/app/scripts/entrypoint.sh"]

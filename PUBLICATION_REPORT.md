@@ -123,9 +123,9 @@ nano .env  # Edit API_KEY and VNC_PASSWORD
 docker-compose up -d
 
 # 4. Access
-# - Web UI: http://localhost:8080
+# - Web UI: http://localhost:4040
 # - noVNC: http://localhost:6080
-# - Health: http://localhost:8080/health
+# - Health: http://localhost:4040/health
 ```
 
 ---
@@ -289,7 +289,7 @@ cp .env.example .env
 docker-compose up -d
 ```
 
-Visit http://localhost:8080 to get started.
+Visit http://localhost:4040 to get started.
 
 ## 📖 Documentation
 

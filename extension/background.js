@@ -1,5 +1,5 @@
 const AGENT_WS_URL = 'ws://127.0.0.1:8765';
-const CALLBACK_URL = 'http://127.0.0.1:8080/api/ext/callback';
+const CALLBACK_URL = 'http://127.0.0.1:4040/api/ext/callback';
 const FLOW_URL = 'https://labs.google/fx/tools/flow';
 
 let ws = null;
